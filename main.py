@@ -16,7 +16,8 @@ def run_command(cmd):
 
     try:
         # print(f'Command {cmd_args}:')
-        result = subprocess.run(cmd_args, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.run(cmd_args, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                cwd="../infra-config")
         return result.stdout
 
     except subprocess.CalledProcessError as e:
