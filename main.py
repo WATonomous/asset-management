@@ -154,5 +154,6 @@ if __name__ == "__main__":
     # "text2" -> watcloud://v1/sha256:d848ca35a6281600b5da598c7cb4d5df561e0ee63ee7cec0e98e6049996f3ff?name=text2.txt
     # print(get_sha256_dict(["server-room-dark-min", "server-room-light-min", "text2"]))
 
-    # get_assets_in_repo()
-    print("script ran")
+    print(get_assets_in_repo())
+
+    # print("script ran")
