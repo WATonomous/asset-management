@@ -18,8 +18,8 @@ bucket_map = {
 # Setup boto3 connection clients
 host_base = "https://rgw.watonomous.ca"
 
-access_temp = ""
-secret_temp = ""
+access_temp = os.getenv("ACCESS_TEMP")
+secret_temp = os.getenv("SECRET_TEMP")
 client_temp = boto3.resource(
     's3',
     endpoint_url=host_base,
@@ -30,8 +30,8 @@ bucket_temp = None
 for bucket in client_temp.buckets.all():
     bucket_temp = bucket
 
-access_perm = ""
-secret_perm = ""
+access_perm = os.getenv("ACCESS_PERM")
+secret_perm = os.getenv("SECRET_PERM")
 client_perm = boto3.resource(
     's3',
     endpoint_url=host_base,
@@ -175,7 +175,7 @@ def manage_assets():
         transfer_file(filename, bucket_temp, bucket_perm)
 
     for filename in move_to_temp:
-        transfer_file(filename, bucket_perm, bucket_temp)
+        transfer_file(filename, bucket_perm, bucket_perm)
 
 def clean_bucket():
     assets = get_assets_in_bucket(S3_PERM)
