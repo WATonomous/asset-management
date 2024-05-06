@@ -4,9 +4,11 @@ FROM python:3.11-bookworm
 WORKDIR /app
 COPY /src/main.py /app
 COPY /src/run.sh /app
+COPY requirements.txt /app
 
 # Copy the private SSH key from github provisioning to the container
-# RUN mkdir /root/.ssh/
+RUN mkdir /root/.ssh/
+
 # RUN echo -e "${SSH_DEPLOY_KEY}" > /root/.ssh/id_rsa
 # RUN cat /root/.ssh/id_rsa
 # COPY id_rsa /root/.ssh/id_rsa
