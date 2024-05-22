@@ -4,7 +4,7 @@ ls -l /root/.ssh
 cat /root/.ssh/id_rsa
 
 # Set permissions for the SSH key
-chmod 600 /root/.ssh/id_rsas
+chmod 600 /root/.ssh/id_rsa
 
 # Add the Git host to the list of known hosts
 ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts
