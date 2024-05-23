@@ -14,6 +14,7 @@ echo sus2
 ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts
 
 echo sus3
+sleep 120
 
 # Clone the repository using the deploy key
 git clone -b hepromark/asset-kubernetes2 git@github.com:WATonomous/infra-config.git
