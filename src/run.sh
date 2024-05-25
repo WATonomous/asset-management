@@ -22,4 +22,4 @@ git clone -b hepromark/asset-kubernetes2 git@github.com:WATonomous/infra-config.
 # Install libraries
 pip install -r requirements.txt
 
-python3 main.p
+python3 main.py
