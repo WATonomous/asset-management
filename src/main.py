@@ -1,5 +1,4 @@
 import os
-import hashlib
 import subprocess
 
 import boto3
@@ -188,30 +187,3 @@ def clean_bucket():
 
 if __name__ == "__main__":
     manage_assets()
-    # clean_bucket()
-
-    # "server-room-light-min.jpg" -> watcloud://v1/sha256:96fc3a9fe38828d5db6146e9f8ddff0556f108fd1097f4c8a8c26721a01af557
-    # "text2" -> watcloud://v1/sha256:d848ca35a6281600b5da598c7cb4d5df561e0ee63ee7cec0e98e6049996f3ff?name=text2.txt
-    # print(get_sha256_dict(["server-room-dark-min", "server-room-light-min", "text2"]))
-
-    # print(get_assets_in_repo())
-    # print("hello world")
-    # print(FILE_PATH)
-    # print(run_command("ls"))
-    # print("Temp")
-    # print(get_assets_in_bucket(bucket_temp))
-    # print("Perm")
-    # print(get_assets_in_bucket(bucket_perm))
-
-    # print("script ran")
-
-    # Boto test
-    # print(bucket_perm)
-    # print(bucket_temp)
-
-    # download_file("requirements.txt", "temp/sussy.txt", bucket_perm)
-
-    # current_dir = os.path.dirname(os.path.abspath(__file__))
-    # files = os.listdir(current_dir)
-    # for f in files:
-    #     print(f)

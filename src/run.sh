@@ -12,4 +12,15 @@ git clone -b hepromark/asset-kubernetes2 git@github.com:WATonomous/infra-config.
 # Install libraries
 pip install -r requirements.txt
 
-python3 main.py
+# Get list of branches
+BRANCHES=$(git ls-remote --heads origin | sed 's?.*refs/heads/??')
+
+# Loop through each branch
+for BRANCH in $BRANCHES; do
+    echo "Managing Assets for: $BRANCH"
+    git checkout $BRANCH
+    git pull origin $BRANCH
+
+    echo "calling main.py"
+    python3 main.py
+done
