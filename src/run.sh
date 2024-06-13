@@ -13,6 +13,7 @@ git clone -b hepromark/asset-kubernetes2 git@github.com:WATonomous/infra-config.
 pip install -r requirements.txt
 
 # Get list of branches
+cd infra-config
 BRANCHES=$(git ls-remote --heads origin | sed 's?.*refs/heads/??')
 
 # Loop through each branch
@@ -21,6 +22,7 @@ for BRANCH in $BRANCHES; do
     git checkout $BRANCH
     git pull origin $BRANCH
 
-    echo "calling main.py"
+    cd ..
     python3 main.py
+    cd infra-config
 done
