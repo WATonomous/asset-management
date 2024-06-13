@@ -107,6 +107,10 @@ def compare_s3_to_repo():
     to_perm = []
     to_temp = []
 
+    # No changes just exit
+    if repo_uris == None:
+        return [], []
+
     # Files to add to perm storage
     for repo_uri in repo_uris:
         if (repo_uri not in perm_s3_uris) and (repo_uri in temp_s3_uris):
