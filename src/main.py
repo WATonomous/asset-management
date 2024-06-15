@@ -8,6 +8,7 @@ S3CFG_PERM_PATH = FILE_PATH + "/s3cfg_perm"
 S3CFG_TEMP_PATH = FILE_PATH + "/s3cfg_temp"
 S3_TEMP = "s3://asset-temp"
 S3_PERM = "s3://asset-perm"
+TEMP_ASSET_DIR = "temp"
 
 bucket_map = {
     S3_TEMP: S3CFG_TEMP_PATH,
@@ -147,7 +148,6 @@ def delete_file(filename, bucket):
 
 def transfer_file(filename, from_bucket, to_bucket):
     # Download file
-    tmp_dir = "temp"
     download_file(filename, tmp_dir + "/" + filename, from_bucket)
 
     # Delete file in the old bucket
@@ -190,4 +190,8 @@ def clean_bucket():
         run_command(f's3cmd --config={bucket_map[S3_TEMP]} del {S3_TEMP}/{asset}')
 
 if __name__ == "__main__":
+    # Make temp dir for assets if needed.
+    os.makedirs(TEMP_ASSET_DIR, exist_ok=True)
+
+    # Run script
     manage_assets()
