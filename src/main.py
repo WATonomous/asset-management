@@ -148,7 +148,7 @@ def delete_file(filename, bucket):
 
 def transfer_file(filename, from_bucket, to_bucket):
     # Download file
-    download_file(filename, tmp_dir + "/" + filename, from_bucket)
+    download_file(filename, TEMP_ASSET_DIR + "/" + filename, from_bucket)
 
     # Delete file in the old bucket
     # run_command(f's3cmd --config={bucket_map[from_bucket]} del {from_bucket}/{filename}')
