@@ -7,7 +7,7 @@ chmod 600 /root/.ssh/id_rsa
 ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts
 
 # Clone the repository using the deploy key
-git clone -b hepromark/asset-kubernetes2 git@github.com:WATonomous/infra-config.git
+git clone -b master git@github.com:WATonomous/infra-config.git
 
 # Install libraries
 pip install -r requirements.txt
