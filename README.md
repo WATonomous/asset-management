@@ -12,6 +12,8 @@ Additional components, including the SDK, the S3 bucket configuration, and deplo
 
 Copy the `.env.example` file to `.env` and fill in the necessary information.
 
+Create `./tmp/deploy-keys` directory and place the required deploy keys in the directory. The list of deploy keys can be configured in `docker-compose.yml`.
+
 Run the following commands to start the development environment:
 
 ```bash
