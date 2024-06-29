@@ -1,0 +1,36 @@
+# This file is used to assist development
+
+services:
+  agent:
+    build: .
+    entrypoint: [ "sleep", "infinity" ]
+    init: true
+    volumes:
+      - ./src:/app
+      - ./tmp/deploy-keys:/deploy-keys:ro
+    environment:
+      - |
+        AGENT_CONFIG={
+          "repos": {
+            "git@github.com:WATonomous/infra-config.git": {"deploy_key_path": "/deploy-keys/infra-config"}
+          },
+          "buckets": {
+            "temp": {
+              "endpoint": "https://rgw.watonomous.ca",
+              "bucket": "asset-temp",
+              "access_key_env_var": "S3_TEMP_ACCESS_KEY",
+              "secret_key_env_var": "S3_TEMP_SECRET_KEY"
+            },
+            "perm": {
+              "endpoint": "https://rgw.watonomous.ca",
+              "bucket": "asset-perm",
+              "access_key_env_var": "S3_PERM_ACCESS_KEY",
+              "secret_key_env_var": "S3_PERM_SECRET_KEY"
+            }
+          }
+        }
+      # These can be set in the .env file
+      - S3_TEMP_ACCESS_KEY=${S3_TEMP_ACCESS_KEY:?}
+      - S3_TEMP_SECRET_KEY=${S3_TEMP_SECRET_KEY:?}
+      - S3_PERM_ACCESS_KEY=${S3_PERM_ACCESS_KEY:?}
+      - S3_PERM_SECRET_KEY=${S3_PERM_SECRET_KEY:?}
