@@ -10,3 +10,5 @@ COPY /src /app
 
 # Add github.com to known hosts
 RUN mkdir /root/.ssh/ && ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts
+
+CMD ["python", "agent.py", "run-agent"]
