@@ -27,29 +27,38 @@ def run_agent():
 
     temp_bucket = get_bucket("temp")
     perm_bucket = get_bucket("perm")
+    off_perm_bucket = get_bucket("off-perm")
 
     temp_objects = set(obj.key for obj in temp_bucket.objects.all())
     perm_objects = set(obj.key for obj in perm_bucket.objects.all())
+    off_perm_objects = set(obj.key for obj in off_perm_bucket.objects.all())
+    all_objects = temp_objects | perm_objects | off_perm_objects
 
     logging.info(f"Found {len(temp_objects)} objects in temp bucket")
     logging.info(f"Found {len(perm_objects)} objects in perm bucket")
+    logging.info(f"Found {len(off_perm_objects)} objects in off-perm bucket")
+
+    import pdb; pdb.set_trace()
 
     errors = []
 
-    if not desired_perm_objects.issubset(temp_objects | perm_objects):
+    if not desired_perm_objects.issubset(all_objects):
         errors.append(
             ValueError(
-                f"Cannot find the following objects in any bucket: {desired_perm_objects - temp_objects - perm_objects}"
+                f"Cannot find the following objects in any bucket: {desired_perm_objects - all_objects}"
             )
         )
 
     # Objects that need to be copied to perm bucket
     to_perm = desired_perm_objects - perm_objects
-    # Objects that need to be copied from temp bucket to perm bucket
     temp_to_perm = to_perm & temp_objects
-    # Objects that need to be deleted from perm bucket
-    perm_to_temp = perm_objects - desired_perm_objects
-    # Objects that need to be deleted from the temp bucket (already exists in another bucket)
+    off_perm_to_perm = to_perm & off_perm_objects
+
+    # Objects that need to be retired from the perm bucket
+    perm_to_off_perm = perm_objects - desired_perm_objects
+
+    # Objects that need to be deleted from the temp bucket (already exists in the perm bucket)
+    # We don't exclude objects from off-perm because the object in temp may exipre later than the object in off-perm
     delete_from_temp = desired_perm_objects & temp_objects - temp_to_perm
 
     logging.info(
@@ -58,8 +67,11 @@ def run_agent():
     logging.info(f"Copying {len(temp_to_perm)} object(s) from temp to perm bucket:")
     for obj_key in temp_to_perm:
         logging.info(obj_key)
-    logging.info(f"Copying {len(perm_to_temp)} object(s) from perm to temp bucket:")
-    for obj_key in perm_to_temp:
+    logging.info(f"Copying {len(off_perm_to_perm)} object(s) from off-perm to perm bucket:")
+    for obj_key in off_perm_to_perm:
+        logging.info(obj_key)
+    logging.info(f"Copying {len(perm_to_off_perm)} object(s) from perm to off-perm bucket:")
+    for obj_key in perm_to_off_perm:
         logging.info(obj_key)
     logging.info(f"Deleting {len(delete_from_temp)} redundant object(s) from temp bucket:")
     for obj_key in delete_from_temp:
@@ -68,7 +80,8 @@ def run_agent():
     with TemporaryDirectory() as temp_dir:
         for obj_key in temp_to_perm:
             temp_bucket.download_file(obj_key, os.path.join(temp_dir, obj_key))
-            # Verify checksum
+            # Verify checksum because we can't trust that the objects in the temp bucket has correct checksums
+            # i.e. attackers can simply use a custom client to upload objects with arbitrary names
             with open(os.path.join(temp_dir, obj_key), "rb") as f:
                 checksum = sha256(f.read()).hexdigest()
             if checksum != obj_key:
@@ -82,9 +95,14 @@ def run_agent():
             perm_bucket.upload_file(os.path.join(temp_dir, obj_key), obj_key)
             temp_bucket.delete_objects(Delete={"Objects": [{"Key": obj_key}]})
 
-        for obj_key in perm_to_temp:
+        for obj_key in off_perm_to_perm:
+            off_perm_bucket.download_file(obj_key, os.path.join(temp_dir, obj_key))
+            perm_bucket.upload_file(os.path.join(temp_dir, obj_key), obj_key)
+            off_perm_bucket.delete_objects(Delete={"Objects": [{"Key": obj_key}]})
+
+        for obj_key in perm_to_off_perm:
             perm_bucket.download_file(obj_key, os.path.join(temp_dir, obj_key))
-            temp_bucket.upload_file(os.path.join(temp_dir, obj_key), obj_key)
+            off_perm_bucket.upload_file(os.path.join(temp_dir, obj_key), obj_key)
             perm_bucket.delete_objects(Delete={"Objects": [{"Key": obj_key}]})
 
         for obj_key in delete_from_temp:

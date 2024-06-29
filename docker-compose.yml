@@ -26,6 +26,12 @@ services:
               "bucket": "asset-perm",
               "access_key_env_var": "S3_PERM_ACCESS_KEY",
               "secret_key_env_var": "S3_PERM_SECRET_KEY"
+            },
+            "off-perm": {
+              "endpoint": "https://rgw.watonomous.ca",
+              "bucket": "asset-off-perm",
+              "access_key_env_var": "S3_OFF_PERM_ACCESS_KEY",
+              "secret_key_env_var": "S3_OFF_PERM_SECRET_KEY"
             }
           }
         }
@@ -34,3 +40,5 @@ services:
       - S3_TEMP_SECRET_KEY=${S3_TEMP_SECRET_KEY:?}
       - S3_PERM_ACCESS_KEY=${S3_PERM_ACCESS_KEY:?}
       - S3_PERM_SECRET_KEY=${S3_PERM_SECRET_KEY:?}
+      - S3_OFF_PERM_ACCESS_KEY=${S3_OFF_PERM_ACCESS_KEY:?}
+      - S3_OFF_PERM_SECRET_KEY=${S3_OFF_PERM_SECRET_KEY:?}
