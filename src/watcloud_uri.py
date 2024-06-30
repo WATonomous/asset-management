@@ -47,6 +47,12 @@ class WATcloudURI:
     def __lt__(self, other):
         return self.sha256 < other.sha256
 
+    def __eq__(self, other):
+        return self.sha256 == other.sha256
+    
+    def __hash__(self):
+        return hash(self.sha256)
+
 if __name__ == "__main__":
     # Example usage
     uri = WATcloudURI("watcloud://v1/sha256:906f98c1d660a70a6b36ad14c559a9468fe7712312beba1d24650cc379a62360?name=cloud-light.avif")
