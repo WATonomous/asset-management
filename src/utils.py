@@ -88,10 +88,14 @@ def get_raw_watcloud_uris(repo_path: Path):
 
     # -h suppresses filename output
     # --only-matching returns only the matched text
-    out = repo.git.execute(
-        ["git", "grep", "--only-matching", "-h", "watcloud://[^\"' ]*"]
-        + [r.name for r in repo.remote().refs]
-    )
+    try:
+        out = repo.git.execute(
+            ["git", "grep", "--only-matching", "-h", "watcloud://[^\"' ]*"]
+            + [r.name for r in repo.remote().refs]
+        )
+    except FileNotFoundError:
+        # when `git grep` can't find any matches, it throws a FileNotFoundError
+        pass
     uris = set(u.strip() for u in out.splitlines() if u.strip())
 
     return uris
