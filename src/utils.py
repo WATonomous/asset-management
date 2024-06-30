@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 
 import boto3
 import typer
-from git import Repo
+from git import GitCommandError, Repo
 
 from watcloud_uri import WATcloudURI
 
@@ -93,9 +93,14 @@ def get_raw_watcloud_uris(repo_path: Path):
             ["git", "grep", "--only-matching", "-h", "watcloud://[^\"' ]*"]
             + [r.name for r in repo.remote().refs]
         )
-    except FileNotFoundError:
-        # when `git grep` can't find any matches, it throws a FileNotFoundError
-        pass
+    except GitCommandError as e:
+        # when `git grep` doesn't find any matches, it throws a GitCommandError with status 1
+        if e.status == 1:
+            logging.debug(f"{repo.working_dir} does not contain any WATcloud URIs")
+            out = ""
+        else:
+            raise
+
     uris = set(u.strip() for u in out.splitlines() if u.strip())
 
     return uris
