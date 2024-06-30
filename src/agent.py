@@ -38,8 +38,6 @@ def run_agent():
     logging.info(f"Found {len(perm_objects)} objects in perm bucket")
     logging.info(f"Found {len(off_perm_objects)} objects in off-perm bucket")
 
-    import pdb; pdb.set_trace()
-
     errors = []
 
     if not desired_perm_objects.issubset(all_objects):
