@@ -8,11 +8,13 @@ services:
     volumes:
       - ./src:/app
       - ./tmp/deploy-keys:/deploy-keys:ro
+      - .:/local-repos/asset-manager:ro
     environment:
       - |
         AGENT_CONFIG={
           "repos": {
-            "git@github.com:WATonomous/infra-config.git": {"deploy_key_path": "/deploy-keys/infra-config"}
+            "git@github.com:WATonomous/infra-config.git": {"deploy_key_path": "/deploy-keys/infra-config"},
+            "asset-manager": {"path": "/local-repos/asset-manager"}
           },
           "buckets": {
             "temp": {
