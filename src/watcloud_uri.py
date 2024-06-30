@@ -20,10 +20,10 @@ class WATcloudURI:
     def __init__(self, input_url):
         parsed_url = urlparse(input_url)
         if parsed_url.scheme != "watcloud":
-            raise ValueError("Invalid WATCloud URI: protocol must be 'watcloud:'")
+            raise ValueError("Invalid WATcloud URI: protocol must be 'watcloud:'")
         if parsed_url.hostname != "v1":
             raise ValueError(
-                f"Invalid WATCloud URI: unsupported version '{parsed_url.hostname}'. Only 'v1' is supported"
+                f"Invalid WATcloud URI: unsupported version '{parsed_url.hostname}'. Only 'v1' is supported"
             )
 
         self.sha256 = extract_sha256(parsed_url.path)
