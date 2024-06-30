@@ -5,6 +5,7 @@ from urllib.parse import urlparse, parse_qs
 RESOLVER_URL_PREFIXES = [
     "https://rgw.watonomous.ca/asset-perm",
     "https://rgw.watonomous.ca/asset-temp",
+    "https://rgw.watonomous.ca/asset-off-perm",
 ]
 
 
