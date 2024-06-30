@@ -49,37 +49,41 @@ def callback(log_level: LogLevel = LogLevel.INFO):
 @app.command()
 def clone_repos():
     for repo_url, repo_config in AGENT_CONFIG["repos"].items():
-        # Temporary file is required to handle ssh key permissions.
-        # NamedTemporaryFile is always created with mode 0600:
-        # https://stackoverflow.com/a/10541972
-        with NamedTemporaryFile() as deploy_key_file:
-            logging.debug(
-                f"Copying deploy key from {repo_config['deploy_key_path']} to {deploy_key_file.name}"
-            )
-            deploy_key_file.write(Path(repo_config["deploy_key_path"]).read_bytes())
-            deploy_key_file.flush()
-
-            repo_path = WORKSPACE / repo_url
-
-            if repo_path.exists():
+        if "path" in repo_config:
+            repo = Repo(repo_config["path"])
+            logging.info(f"Using existing repo at {repo.working_dir}")
+        elif "deploy_key_path" in repo_config:
+            # Temporary file is required to handle ssh key permissions.
+            # NamedTemporaryFile is always created with mode 0600:
+            # https://stackoverflow.com/a/10541972
+            with NamedTemporaryFile() as deploy_key_file:
                 logging.debug(
-                    f"Path {repo_path} already exists. Pulling latest changes."
+                    f"Copying deploy key from {repo_config['deploy_key_path']} to {deploy_key_file.name}"
                 )
-                repo = Repo(repo_path)
-                repo.remote().pull(
-                    env={"GIT_SSH_COMMAND": f"ssh -i {deploy_key_file.name}"}
-                )
-                logging.info(f"Pulled latest changes to {repo.working_dir}")
-            else:
-                logging.debug(f"Path {repo_path} does not exist. Cloning repo.")
-                repo = Repo.clone_from(
-                    repo_url,
-                    repo_path,
-                    env={"GIT_SSH_COMMAND": f"ssh -i {deploy_key_file.name}"},
-                )
-                logging.info(f"Cloned {repo_url} to {repo.working_dir}")
+                deploy_key_file.write(Path(repo_config["deploy_key_path"]).read_bytes())
+                deploy_key_file.flush()
 
-            yield repo
+                repo_path = WORKSPACE / repo_url
+
+                if repo_path.exists():
+                    logging.debug(
+                        f"Path {repo_path} already exists. Pulling latest changes."
+                    )
+                    repo = Repo(repo_path)
+                    repo.remote().pull(
+                        env={"GIT_SSH_COMMAND": f"ssh -i {deploy_key_file.name}"}
+                    )
+                    logging.info(f"Pulled latest changes to {repo.working_dir}")
+                else:
+                    logging.debug(f"Path {repo_path} does not exist. Cloning repo.")
+                    repo = Repo.clone_from(
+                        repo_url,
+                        repo_path,
+                        env={"GIT_SSH_COMMAND": f"ssh -i {deploy_key_file.name}"},
+                    )
+                    logging.info(f"Cloned {repo_url} to {repo.working_dir}")
+
+        yield repo
 
 
 @app.command()
