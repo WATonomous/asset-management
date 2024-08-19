@@ -16,7 +16,7 @@ def run_agent():
     logging.info("Extracting WATcloud URIs")
     watcloud_uris = list(
         # sorting to ensure consistent order for testing
-        sorted(flatten([get_watcloud_uris(repo.working_dir) for repo in repos]))
+        sorted(set(flatten([get_watcloud_uris(repo.working_dir) for repo in repos])))
     )
 
     logging.info(f"Found {len(watcloud_uris)} WATcloud URIs:")
