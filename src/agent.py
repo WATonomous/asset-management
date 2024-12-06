@@ -209,6 +209,6 @@ class Agent:
             logging.error("Encountered the following errors during execution:")
             for error in errors:
                 logging.error(error)
-            raise ValueError("Encountered errors during agent execution.")
+            raise ValueError(f"Encountered {len(errors)} errors during agent execution. Please see above for details.")
 
         logging.info("Agent execution complete")
