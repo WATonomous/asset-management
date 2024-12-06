@@ -6,7 +6,7 @@ services:
     entrypoint: [ "sleep", "infinity" ]
     init: true
     volumes:
-      - ./src:/app
+      - ./:/app
       - ./tmp/deploy-keys:/deploy-keys:ro
       - .:/local-repos/asset-manager:ro
     environment:
