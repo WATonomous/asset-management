@@ -6,9 +6,9 @@ RUN pip install -r /tmp/requirements.txt --break-system-packages
 
 # Copy files into container
 WORKDIR /app
-COPY /src /app
+COPY /src /app/src
 
 # Add github.com to known hosts
 RUN mkdir /root/.ssh/ && ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts
 
-CMD ["python", "agent.py", "run-agent"]
+CMD ["python", "-m", "src.main", "run-agent"]

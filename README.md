@@ -10,10 +10,6 @@ Additional components, including the SDK, the S3 bucket configuration, and deplo
 
 ## Getting Started (Agent Development)
 
-Copy the `.env.example` file to `.env` and fill in the necessary information.
-
-Create `./tmp/deploy-keys` directory and place the required deploy keys in the directory. The list of deploy keys can be configured in `docker-compose.yml`.
-
 Run the following commands to start the development environment:
 
 ```bash
@@ -25,3 +21,11 @@ Enter the container:
 ```bash
 docker compose exec agent bash
 ```
+
+Start the agent:
+
+```bash
+python -m src.main run-agent
+```
+
+By default, the agent will interface with the local minio server and look for WATcloud URIs in a dummy git repository. These are configurable in `docker-compose.yml` and via environment variables in the container.

@@ -6,41 +6,67 @@ services:
     entrypoint: [ "sleep", "infinity" ]
     init: true
     volumes:
-      - ./src:/app
+      - ./:/app
       - ./tmp/deploy-keys:/deploy-keys:ro
       - .:/local-repos/asset-manager:ro
     environment:
       - |
-        AGENT_CONFIG={
-          "repos": {
-            "git@github.com:WATonomous/infra-config.git": {"deploy_key_path": "/deploy-keys/infra-config"},
-            "asset-manager": {"path": "/local-repos/asset-manager"}
+        BUCKET_CONFIG={
+          "temp": {
+            "endpoint_url": "http://minio:9000",
+            "access_key_id": "minioaccess",
+            "secret_key": "miniosecret",
+            "bucket_name": "asset-temp"
           },
-          "buckets": {
-            "temp": {
-              "endpoint": "https://rgw.watonomous.ca",
-              "bucket": "asset-temp",
-              "access_key_env_var": "S3_TEMP_ACCESS_KEY",
-              "secret_key_env_var": "S3_TEMP_SECRET_KEY"
-            },
-            "perm": {
-              "endpoint": "https://rgw.watonomous.ca",
-              "bucket": "asset-perm",
-              "access_key_env_var": "S3_PERM_ACCESS_KEY",
-              "secret_key_env_var": "S3_PERM_SECRET_KEY"
-            },
-            "off-perm": {
-              "endpoint": "https://rgw.watonomous.ca",
-              "bucket": "asset-off-perm",
-              "access_key_env_var": "S3_OFF_PERM_ACCESS_KEY",
-              "secret_key_env_var": "S3_OFF_PERM_SECRET_KEY"
-            }
+          "perm": {
+            "endpoint_url": "http://minio:9000",
+            "access_key_id": "minioaccess",
+            "secret_key": "miniosecret",
+            "bucket_name": "asset-perm"
+          },
+          "off-perm": {
+            "endpoint_url": "http://minio:9000",
+            "access_key_id": "minioaccess",
+            "secret_key": "miniosecret",
+            "bucket_name": "asset-off-perm"
           }
         }
-      # These can be set in the .env file
-      - S3_TEMP_ACCESS_KEY=${S3_TEMP_ACCESS_KEY:?}
-      - S3_TEMP_SECRET_KEY=${S3_TEMP_SECRET_KEY:?}
-      - S3_PERM_ACCESS_KEY=${S3_PERM_ACCESS_KEY:?}
-      - S3_PERM_SECRET_KEY=${S3_PERM_SECRET_KEY:?}
-      - S3_OFF_PERM_ACCESS_KEY=${S3_OFF_PERM_ACCESS_KEY:?}
-      - S3_OFF_PERM_SECRET_KEY=${S3_OFF_PERM_SECRET_KEY:?}
+      - |
+        REPO_CONFIG={
+          "repos": [
+            {
+              "type": "git+https",
+              "url": "https://github.com/octocat/Hello-World.git"
+            }
+          ]
+        }
+    depends_on:
+      minio-init:
+        condition: service_completed_successfully
+
+  minio:
+    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
+    environment:
+      MINIO_ACCESS_KEY: minioaccess
+      MINIO_SECRET_KEY: miniosecret
+    command: server /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
+  minio-init:
+    image: minio/mc
+    entrypoint: [ "sh", "-c" ]
+    command:
+      - |
+        mc alias set minio http://minio:9000 minioaccess miniosecret
+        mc mb --ignore-existing minio/asset-temp
+        mc mb --ignore-existing minio/asset-perm
+        mc mb --ignore-existing minio/asset-off-perm
+    depends_on:
+      minio:
+        condition: service_healthy
+
+
