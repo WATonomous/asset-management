@@ -96,8 +96,8 @@ class Agent:
             name: boto3.resource(
                 "s3",
                 endpoint_url=config["endpoint_url"],
-                aws_access_key_id=config["access_key_id"] or os.environ[config["access_key_id_env_var"]],
-                aws_secret_access_key=config["secret_key"] or os.environ[config["secret_key_env_var"]],
+                aws_access_key_id=config.get("access_key_id") or os.environ[config["access_key_id_env_var"]],
+                aws_secret_access_key=config.get("secret_key") or os.environ[config["secret_key_env_var"]],
             ).Bucket(config["bucket_name"])
             for name, config in bucket_config.items()
         }
