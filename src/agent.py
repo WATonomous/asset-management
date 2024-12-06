@@ -16,11 +16,17 @@ bucket_schema = {
     "properties": {
         "endpoint_url": {"type": ["string", "null"]},
         "bucket_name": {"type": "string"},
+        
+        # one of
         "access_key_id": {"type": "string"},
+        "access_key_id_env_var": {"type": "string"},
+        
+        # one of
         "secret_key": {"type": "string"},
+        "secret_key_env_var": {"type": "string"},
     },
     "additionalProperties": False,
-    "required": ["endpoint_url", "bucket_name", "access_key_id", "secret_key"],
+    "required": ["endpoint_url", "bucket_name"],
 }
 
 bucket_config_schema = {
@@ -90,8 +96,8 @@ class Agent:
             name: boto3.resource(
                 "s3",
                 endpoint_url=config["endpoint_url"],
-                aws_access_key_id=config["access_key_id"],
-                aws_secret_access_key=config["secret_key"],
+                aws_access_key_id=config["access_key_id"] or os.environ[config["access_key_id_env_var"]],
+                aws_secret_access_key=config["secret_key"] or os.environ[config["secret_key_env_var"]],
             ).Bucket(config["bucket_name"])
             for name, config in bucket_config.items()
         }
